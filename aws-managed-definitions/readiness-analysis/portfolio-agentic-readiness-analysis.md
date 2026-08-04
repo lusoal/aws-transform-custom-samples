@@ -556,23 +556,23 @@ Use the `[ARA-anchor]`, `[ARA]`, and `[ARA+MOD]`-tagged programs in the library 
 - **Agentic anchor programs** (AI DLC, AXE, Innovation EBA) — defined in the library's "Agentic Enablement Programs (ARA Anchors)" section with their own signal patterns and evaluation logic. These are ARA-only and group under Engagement Models.
 - **"3+ High-severity findings across any dimension"** → count unified `High` findings (cross-cutting BLOCKERs from Step 4, plus conditional BLOCKERs resolved as High) across the portfolio.
 - **Readiness profiles** → use the exact ARA profile names: `Agent-Ready`, `Pilot-Ready`, `Pilot-Ready (Safety Concerns)`, `Remediation Required`, `Not Agent-Integrable`. Use the profile distribution from the executive dashboard (Step 3).
-- **A dimension "showing problems"** → that ARA category has 2+ `Medium`/`High` findings (e.g., SHIP triggers when `Authentication & Authorization` has 2+ Medium/High findings; Well-Architected Review when `Engineering Maturity` or `Observability` has 2+ Medium+ findings).
+- **A dimension "showing problems"** → that ARA category has 2+ `Medium`/`High` findings (e.g., Well-Architected Review when `Engineering Maturity` or `Observability` has 2+ Medium+ findings).
 - **Customer segment** (Enterprise / SMB / ISV / Startup / WWPS) → infer from the portfolio `context` and `service_inventory`.
 
-Apply the library's selection rules: cap recommendations at **3–5**, prioritize by direct finding match → segment fit → entry-point-before-follow-on, group as **Funded Programs → Engagement Models → GTM Motions**, sequence logically (Assessment → Funding → Execution → Optimization, and for the anchor programs AI DLC → AXE → Innovation EBA), and never recommend `Retiring` or not-yet-imminent `Launching` programs. Run the library's reasoning checklist before finalizing.
+Apply the library's selection rules: cap recommendations at **3–5**, prioritize by direct finding match → segment fit → entry-point-before-follow-on, group as **Funded Programs → Engagement Models**, sequence logically (Assessment → Funding → Execution → Optimization, and for the anchor programs AI DLC → AXE → Innovation EBA), and never recommend `Retiring` or not-yet-imminent `Launching` programs. Run the library's reasoning checklist before finalizing.
 
 #### 7.2 Program Recommendations Output
 
 For each triggered program:
 
-- **Program name** — e.g., AI DLC, AXE, Innovation EBA, or any library program (MAP, AI Assessment, SHIP, ACP, etc.)
+- **Program name** — e.g., AI DLC, AXE, Innovation EBA, or any library program (MAP, AI Assessment, ACP, etc.)
 - **Relevance** — Why this program is recommended based on portfolio findings
 - **Trigger findings** — Specific portfolio metrics that triggered the recommendation (using ARA profile/severity language)
 - **What it provides** — Brief description of the program's value
 - **Suggested timing** — When to run relative to other programs or analysis phases
 - **Next step** — Recommended action (e.g., "Request engagement via AWS Solutions Architect")
 
-Group the rendered output under **Funded Programs → Engagement Models → GTM Motions** (the three agentic anchor programs are Engagement Models). Cap at 3–5 total. Do not expose any internal numeric maturity score.
+Group the rendered output under **Funded Programs → Engagement Models** (the three agentic anchor programs are Engagement Models). Cap at 3–5 total. Do not expose any internal numeric maturity score.
 
 If no programs are triggered, include a brief note: "No specific agentic program recommendations based on current findings. As the portfolio's agentic readiness improves, re-assess to identify program eligibility."
 
@@ -918,12 +918,6 @@ Group related BLOCKERs that can be addressed together.>
 |---------|-----------|-----------------|------------------|-----------|
 | <Program name> | <Why recommended> | <Specific metrics> | <When to run> | <Action> |
 
-#### GTM Motions
-
-| Program | Relevance | Trigger Findings | Suggested Timing | Next Step |
-|---------|-----------|-----------------|------------------|-----------|
-| <Program name> | <Why recommended> | <Specific metrics> | <When to run> | <Action> |
-
 <Omit any group heading that has no triggered programs.>
 
 ### Program Details
@@ -1112,7 +1106,7 @@ The Portfolio ARA JSON artifact MUST emit these top-level keys in the order show
 | `findings[]` | Per-repo findings propagated up. Each entry is a 12-field per-repo finding plus `repo_name`. One entry per (repo × question_id). Used by webapp Findings tab. |
 | `cross_cutting_findings[]` | Portfolio-aggregated findings where the same question_id fires at the same tier across 2+ repos (BLOCKER) or meets the scaling threshold (RISK, max(3, 33% of applicable repos)). One entry per question_id. Used by webapp Cross-Cutting view. |
 | `remediation_roadmap` | See §"Remediation Roadmap" below |
-| `recommended_actions[]` | Agentic anchor programs (AI DLC, AXE, Innovation EBA) plus triggered AWS Program & GTM Library programs, grouped Funded → Engagement → GTM |
+| `recommended_actions[]` | Agentic anchor programs (AI DLC, AXE, Innovation EBA) plus triggered AWS Program & GTM Library programs, grouped Funded → Engagement |
 | `portfolio_level_findings[]` | PORT-ARA-Q* cross-portfolio findings |
 | `dependency_map` | Dependency map |
 
@@ -1283,9 +1277,9 @@ Each entry carries:
 }
 ```
 
-`group` ∈ {Funded Programs, Engagement Models, GTM Motions}. `status` ∈ {Triggered, Applicable, Not Triggered}. `trigger_reason` is non-empty prose explaining why the program fires (using ARA profile/severity language, never an internal numeric score). The total triggered set is capped at 3–5 per the library's selection rules; library entries carry `acronym: null` where the program has no acronym.
+`group` ∈ {Funded Programs, Engagement Models}. `status` ∈ {Triggered, Applicable, Not Triggered}. `trigger_reason` is non-empty prose explaining why the program fires (using ARA profile/severity language, never an internal numeric score). The total triggered set is capped at 3–5 per the library's selection rules; library entries carry `acronym: null` where the program has no acronym.
 
-The MD artifact renders this under an H2 heading **"## Recommended Actions"**, grouped Funded Programs → Engagement Models → GTM Motions. The "## Agentic Program Recommendations" label is retained as an H3 subheading under that H2 to preserve rich program prose without creating duplicate H2s.
+The MD artifact renders this under an H2 heading **"## Recommended Actions"**, grouped Funded Programs → Engagement Models. The "## Agentic Program Recommendations" label is retained as an H3 subheading under that H2 to preserve rich program prose without creating duplicate H2s.
 
 ---
 
@@ -1363,8 +1357,8 @@ Source: `remediation_roadmap.items[]` grouped by phase
 Table columns: `Program`, `Group`, `Description`, `Why Recommended`, `Duration`
 
 - Source: `recommended_actions[]` filtered to `status == "Triggered"`
-- Group values: `Funded Programs`, `Engagement Models`, `GTM Motions` — render as grouped sections in that order (or a Group column), omitting any group with no triggered programs
-- The triggered set can include ANY `[ARA]` / `[ARA+MOD]` / `[ARA-anchor]` program from the AWS Program & GTM Library — not just the agentic anchors. Examples that may appear from ARA findings: MAP / MAP for AI Modernization (Funded), AI Assessment Program (Funded), SHIP (Non-Funded → grouped under Funded Programs per the library's grouping rule), Well-Architected Review, AI DLC / AXE / Innovation EBA / ACP / GenAI Innovation Center (Engagement Models), AgentStorming Workshop, Agentic-led Modernization Sales Play (GTM Motions)
+- Group values: `Funded Programs`, `Engagement Models` — render as grouped sections in that order (or a Group column), omitting any group with no triggered programs
+- The triggered set can include ANY `[ARA]` / `[ARA+MOD]` / `[ARA-anchor]` program from the AWS Program & GTM Library — not just the agentic anchors. Examples that may appear from ARA findings: MAP / MAP for AI Modernization (Funded), AI Assessment Program (Funded), SHIP (Funded — only for infrastructure security gaps like missing CloudTrail/encryption/secrets management, NOT for app-layer agent auth), Well-Architected Review (Funded), AI DLC / AXE / Innovation EBA / ACP / GenAI Innovation Center (Engagement Models), AgentStorming Workshop (Engagement Models)
 - Capped at 3–5 total per the library's selection rules. Do not display any internal numeric maturity score.
 
 #### Footer
